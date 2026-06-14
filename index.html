@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전자의수 시연 앱 - 신경신호 확률 분석</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦾 전자의수 신경신호 분석 시연</h1>
+            <p>정규분포를 이용한 신경신호 확률적 처리 과정</p>
+        </header>
+
+        <main>
+            <div class="layout">
+                <!-- 왼쪽: 제어판 -->
+                <section class="left-panel">
+                    <h2>📊 신경신호 ���력</h2>
+                    
+                    <div class="control-section">
+                        <h3>1️⃣ 대상 손가락 선택</h3>
+                        <div class="finger-buttons">
+                            <button class="finger-btn" data-finger="thumb">
+                                <span>👍</span>
+                                <span>엄지</span>
+                            </button>
+                            <button class="finger-btn" data-finger="index">
+                                <span>☝️</span>
+                                <span>검지</span>
+                            </button>
+                            <button class="finger-btn" data-finger="middle">
+                                <span>☝️</span>
+                                <span>중지</span>
+                            </button>
+                            <button class="finger-btn" data-finger="ring">
+                                <span>☝️</span>
+                                <span>약지</span>
+                            </button>
+                            <button class="finger-btn" data-finger="pinky">
+                                <span>☝️</span>
+                                <span>새끼</span>
+                            </button>
+                        </div>
+                        <div class="selected-info">
+                            선택된 손가락: <strong id="selectedFinger">중지</strong>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3>2️⃣ 신경신호 강도 조절</h3>
+                        <div class="slider-container">
+                            <input type="range" id="strengthSlider" min="0" max="100" value="50" class="slider">
+                            <div class="slider-labels">
+                                <span>약함</span>
+                                <span id="strengthValue" class="strength-value">50%</span>
+                                <span>강함</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3>3️⃣ 신경신호 처리</h3>
+                        <button id="processBtn" class="process-btn">🔄 신경신호 처리 시작</button>
+                        <button id="resetBtn" class="reset-btn">🔁 초기화</button>
+                    </div>
+
+                    <div class="control-section info-box">
+                        <h3>ℹ️ 현재 상태</h3>
+                        <div class="status-info">
+                            <p><strong>선택 손가락:</strong> <span id="statusFinger">중지</span></p>
+                            <p><strong>신경신호 강도:</strong> <span id="statusStrength">50%</span></p>
+                            <p><strong>계산된 확률:</strong> <span id="statusProbability">-</span></p>
+                            <p><strong>활성화 여부:</strong> <span id="statusActive">대기중</span></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 중앙: 정규분포 그래프 & 손 -->
+                <section class="center-panel">
+                    <!-- 정규분포 그래프 -->
+                    <div class="graph-section">
+                        <h2>📈 신경신호 정규분포 분석</h2>
+                        <canvas id="distributionCanvas" width="450" height="300"></canvas>
+                        <div class="graph-info">
+                            <p>파란 곡선: 선택 손가락의 신경신호 분포</p>
+                            <p>빨간 선: 현재 신경신호 강도</p>
+                            <p>녹색 영역: 신호 확률값</p>
+                        </div>
+                    </div>
+
+                    <!-- 손 애니메이션 -->
+                    <div class="hand-section">
+                        <h2>🖐️ 전자의수 상태</h2>
+                        <canvas id="handCanvas" width="450" height="350"></canvas>
+                    </div>
+                </section>
+
+                <!-- 오른쪽: 신호 처리 단계 -->
+                <section class="right-panel">
+                    <h2>⚙️ 신호 처리 파이프라인</h2>
+                    
+                    <div class="pipeline">
+                        <div class="step">
+                            <div class="step-number">1️⃣</div>
+                            <div class="step-title">신경신호 감지</div>
+                            <div class="step-content">
+                                <p>EMG 센서에서<br>신경신호 수집</p>
+                                <p class="step-value" id="step1">신호: -</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow">↓</div>
+
+                        <div class="step">
+                            <div class="step-number">2️⃣</div>
+                            <div class="step-title">신호 필터링</div>
+                            <div class="step-content">
+                                <p>노이즈 제거<br>및 정규화</p>
+                                <p class="step-value" id="step2">처리중...</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow">↓</div>
+
+                        <div class="step">
+                            <div class="step-number">3️⃣</div>
+                            <div class="step-title">Z-Score 계산</div>
+                            <div class="step-content">
+                                <p>표준정규분포로<br>변환</p>
+                                <p class="step-value" id="step3">Z = -</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow">↓</div>
+
+                        <div class="step">
+                            <div class="step-number">4️⃣</div>
+                            <div class="step-title">확률 계산</div>
+                            <div class="step-content">
+                                <p>누적확률함수(CDF)<br>계산</p>
+                                <p class="step-value" id="step4">P(X) = -</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow">↓</div>
+
+                        <div class="step">
+                            <div class="step-number">5️⃣</div>
+                            <div class="step-title">의사결정</div>
+                            <div class="step-content">
+                                <p>임계값 비교<br>(50% 기준)</p>
+                                <p class="step-value" id="step5">판정: -</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow">↓</div>
+
+                        <div class="step">
+                            <div class="step-number">6️⃣</div>
+                            <div class="step-title">모터 제어</div>
+                            <div class="step-content">
+                                <p>전자의수 손가락<br>구동</p>
+                                <p class="step-value" id="step6">상태: 대기</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box theory">
+                        <h3>📚 정규분포 이론</h3>
+                        <p><strong>평균 (μ):</strong> 손가락별 기준 신경신호</p>
+                        <p><strong>표준편차 (σ):</strong> 신호 변동성 (±15%)</p>
+                        <p><strong>Z-Score:</strong> (신호-평균)/표준편차</p>
+                        <p><strong>누적확률:</strong> Z값 이하의 확률</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 정보 섹션 -->
+            <section class="info-section">
+                <h2>📖 전자의수 정보</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>🔬 원리</h3>
+                        <p>팔의 근육에서 발생하는 근전도(EMG) 신호를 센서로 감지하고, 머신러닝과 확률 모델을 이용해 사용자의 의도를 해석합니다.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>⚡ 신호 처리</h3>
+                        <p>정규분포를 이용하면 노이즈가 있는 신경신호에서도 안정적으로 사용자의 의도를 추정할 수 있습니다. 확률 기반의 의사결정으로 오류를 최소화합니다.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>🤖 장점</h3>
+                        <p>정밀한 개별 손가락 제어, 자연스러운 움직임, 실시간 피드백으로 사용자 적응성이 높고 일상 생활에 효과적입니다.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2026 전자의수 신경신호 분석 시연 앱 | 친구들 발표용</p>
+        </footer>
+    </div>
+
+    <script src="distribution.js"></script>
+    <script src="hand.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
